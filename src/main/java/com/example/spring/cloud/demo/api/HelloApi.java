@@ -1,8 +1,10 @@
 package com.example.spring.cloud.demo.api;
 
+import com.example.spring.cloud.demo.command.UserCommad;
 import com.example.spring.cloud.demo.dto.UserDto;
 import com.example.spring.cloud.demo.service.HelloService;
 import com.netflix.discovery.converters.Auto;
+import com.netflix.hystrix.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.lang.Nullable;
@@ -10,10 +12,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
+import rx.Observable;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @RestController
 @RequestMapping("/v1")
@@ -27,6 +34,26 @@ public class HelloApi {
 
         return restTemplate.getForEntity("http://EUREKA-CLIENT/v1/hello", String.class).getBody();
     }
+
+
+    /**
+     *
+     * @param id
+     * @param type
+     * @return
+     * @throws ExecutionException
+     * @throws InterruptedException
+     */
+    @GetMapping("/getUserById")
+    public String getUserById(String id,String type) throws ExecutionException, InterruptedException,Exception {
+        return helloService.getUser(id, type);
+    }
+
+    @GetMapping("/getObservable")
+    public Observable getObservable(String id, String type) throws ExecutionException, InterruptedException {
+        return helloService.getObservable(id, type);
+    }
+
 
 
     @Autowired
